@@ -1,71 +1,44 @@
-- ## 定时更新固件测试，一定要先设置好发布密匙，因为检测更新是检测github的发布地址，settings.ini文件里面可以设置编译的时候是否要编译上定时更新的开关，默认是开启的
+**English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
 
-- ### 理论上在openwrt-系统-备份/升级里能后台升级的机子都支持定时更新的
+# Actions-OpenWrt
 
-- ### 测试方法，分别在两个时间段启动编译，比如1:00启动一个编译,然后1:05分启动一个编译，完成后，安装1:00的，就会自动检测到1:05的
-#
-- ### 在diy-3.sh里面需要修改的东西
-```
-Author="281677160"       你的帐号
-Default_Device="x86-64"          机型名字，看下面说明
-Updete_firmware="openwrt-x86-64-combined-squashfs.img.gz"  安装固件名字,一定要正确填写,源码不一样名字不一样
-Extension=".img.gz"              安装固件的扩展（后缀），一定要正确填写
-Source="lede"               源码作者名字，随便写，用来区分源码的
+[![LICENSE](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square&label=LICENSE)](https://github.com/P3TERX/Actions-OpenWrt/blob/master/LICENSE)
+![GitHub Stars](https://img.shields.io/github/stars/P3TERX/Actions-OpenWrt.svg?style=flat-square&label=Stars&logo=github)
+![GitHub Forks](https://img.shields.io/github/forks/P3TERX/Actions-OpenWrt.svg?style=flat-square&label=Forks&logo=github)
 
-```
+A template for building OpenWrt with GitHub Actions
 
----
-- 机型名字可以看.config的第三行
-```
-CONFIG_TARGET_rockchip=y
-CONFIG_TARGET_rockchip_armv8=y
-CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r2s=y
+## Usage
 
-- 上面的就是机型文件的三项，找到 DEVICE_ 跟着的就是机型名字，后面的=y不要，就是friendlyarm_nanopi-r2s
-- 就我知道没有明确机型名字的有X86跟N1，x86的填写x86-64或者x86-32根据你编译的填写
-```
+- Click the [Use this template](https://github.com/P3TERX/Actions-OpenWrt/generate) button to create a new repository.
+- Generate `.config` files using [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) source code. ( You can change it through environment variables in the workflow file. )
+- Push `.config` file to the GitHub repository.
+- Select `Build OpenWrt` on the Actions page.
+- Click the `Run workflow` button.
+- When the build is complete, click the `Artifacts` button in the upper right corner of the Actions page to download the binaries.
 
----
+## Tips
 
-- ### 自动在你现有的.config配置增加以下三个插件，免除SSH进去选择
-```
-luci-app-autoupdate=y    定时更新插件
-luci-app-ttyd=y        openwrt内置SSH命令窗
-IMAGES_GZIP=y         把img压缩成img.gz的
+- It may take a long time to create a `.config` file and build the OpenWrt firmware. Thus, before create repository to build your own firmware, you may check out if others have already built it which meet your needs by simply [search `Actions-Openwrt` in GitHub](https://github.com/search?q=Actions-openwrt).
+- Add some meta info of your built firmware (such as firmware architecture and installed packages) to your repository introduction, this will save others' time.
 
-#
-如果有机子是需要.img格式而不是.img.gz的话，可以到diy-3.sh删除以下两行代码：
-找到Diy_Part1在里面有
+## Credits
 
-sed -i '/IMAGES_GZIP/d' .config > /dev/null 2>&1
-echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> .config
+- [Microsoft Azure](https://azure.microsoft.com)
+- [GitHub Actions](https://github.com/features/actions)
+- [OpenWrt](https://github.com/openwrt/openwrt)
+- [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)
+- [tmate](https://github.com/tmate-io/tmate)
+- [mxschmitt/action-tmate](https://github.com/mxschmitt/action-tmate)
+- [csexton/debugger-action](https://github.com/csexton/debugger-action)
+- [Cowtransfer](https://cowtransfer.com)
+- [WeTransfer](https://wetransfer.com/)
+- [Mikubill/transfer](https://github.com/Mikubill/transfer)
+- [softprops/action-gh-release](https://github.com/softprops/action-gh-release)
+- [ActionsRML/delete-workflow-runs](https://github.com/ActionsRML/delete-workflow-runs)
+- [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
+- [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
 
-以上这两行代码，删除了就可以了
+## License
 
-```
----
-- ### 使用命令更新固件脚本和扩展空间:
-```
-首先需要打开 Openwrt 主页,点击系统-TTYD 终端或命令窗,按需输入下方指令:
-
-检查更新(保留配置): bash /bin/AutoUpdate.sh
-
-检查更新(不保留配置): bash /bin/AutoUpdate.sh -n
-
-
-使用一键扩展内部空间\挂载 Samba 共享脚本:
-同上方操作,打开TTYD 终端或命令窗,输入bash /bin/AutoBuild_Tools.sh
-```
----
-- ### 定时更新设置:
-- 首先需要打开 Openwrt 主页,点击系统-定时更新 ，定时更新勾选上，设置好时间，保存设置就可以了
-
-
----
-## 鸣谢
-
-   - [Hyy2001X](https://github.com/Hyy2001X/AutoBuild-Actions)
-
-   - [dhxh](https://github.com/dhxh/Openwrt-Build)
-
-   - 定时更新脚本是由[dhxh](https://github.com/dhxh/Openwrt-Build)从[Hyy2001X](https://github.com/Hyy2001X/AutoBuild-Actions)基础修改完成
+[MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)
